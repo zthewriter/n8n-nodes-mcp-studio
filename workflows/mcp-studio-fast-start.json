@@ -1,0 +1,167 @@
+{
+  "name": "MCP Studio fast start",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1f0c2d4-0001-4000-8000-000000000001",
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-220, 0]
+    },
+    {
+      "parameters": {
+        "resource": "account",
+        "operation": "getUsage"
+      },
+      "id": "a1f0c2d4-0002-4000-8000-000000000002",
+      "name": "Check plan and limits",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "credentials": {
+        "mcpStudioApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "MCP Studio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b2f0c2d4-0000-4000-8000-000000000010",
+              "leftValue": "={{ $json.serversUsed }}",
+              "rightValue": "={{ $json.serversLimit }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a1f0c2d4-0003-4000-8000-000000000003",
+      "name": "Room for another server?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "resource": "server",
+        "operation": "create",
+        "name": "Product Docs",
+        "sources": {
+          "source": [
+            {
+              "url": "https://docs.appatools.com/mcp-studio",
+              "type": "",
+              "label": "MCP Studio docs"
+            }
+          ]
+        },
+        "tools": ["search_docs", "get_code_examples", "ask_question"],
+        "additionalFields": {
+          "description": "Created from n8n as a fast-start example"
+        }
+      },
+      "id": "a1f0c2d4-0004-4000-8000-000000000004",
+      "name": "Create MCP server",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [460, -100],
+      "credentials": {
+        "mcpStudioApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "MCP Studio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 45
+      },
+      "id": "a1f0c2d4-0005-4000-8000-000000000005",
+      "name": "Wait for indexing",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [680, -100],
+      "webhookId": "a1f0c2d4-0005-4000-8000-000000000005"
+    },
+    {
+      "parameters": {
+        "resource": "server",
+        "operation": "get",
+        "serverId": "={{ $('Create MCP server').item.json.slug }}"
+      },
+      "id": "a1f0c2d4-0006-4000-8000-000000000006",
+      "name": "Get endpoint and progress",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [900, -100],
+      "credentials": {
+        "mcpStudioApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "MCP Studio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c3f0c2d4-0000-4000-8000-000000000020",
+              "name": "message",
+              "value": "Server limit reached on your current plan. Upgrade at https://appatools.com/mcp-studio/pricing to create more.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1f0c2d4-0007-4000-8000-000000000007",
+      "name": "At server limit",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [460, 120]
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [[{ "node": "Check plan and limits", "type": "main", "index": 0 }]]
+    },
+    "Check plan and limits": {
+      "main": [[{ "node": "Room for another server?", "type": "main", "index": 0 }]]
+    },
+    "Room for another server?": {
+      "main": [
+        [{ "node": "Create MCP server", "type": "main", "index": 0 }],
+        [{ "node": "At server limit", "type": "main", "index": 0 }]
+      ]
+    },
+    "Create MCP server": {
+      "main": [[{ "node": "Wait for indexing", "type": "main", "index": 0 }]]
+    },
+    "Wait for indexing": {
+      "main": [[{ "node": "Get endpoint and progress", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

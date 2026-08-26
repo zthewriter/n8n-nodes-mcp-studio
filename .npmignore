@@ -1,0 +1,6 @@
+*
+!dist/**/*
+dist/**/*.map
+!package.json
+!LICENSE.md
+!README.md
