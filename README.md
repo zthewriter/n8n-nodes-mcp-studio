@@ -6,11 +6,13 @@ An n8n community node for [MCP Studio by Appa](https://appatools.com/mcp-studio)
 
 ## What this is
 
-An AI agent is only as good as the context it can reach. Giving one access to your documentation normally means building a retrieval pipeline: crawl the pages, chunk them, embed them, store the vectors, write a search layer, then wrap the whole thing in an MCP server and host it. That is days of work and a service to operate.
+For an AI agent to answer accurately about your product, it needs an MCP server sitting in front of your documentation. There is no way around that piece. Without one, the agent answers from whatever it absorbed at training time.
 
-MCP Studio does that part. You give it URLs; it crawls, chunks, embeds, and indexes them, then exposes a hosted MCP endpoint with search tools over the result.
+Building that server yourself means crawling the pages, chunking them so headings and code blocks survive intact, generating embeddings, storing the vectors, writing a search layer that ranks well enough to be trusted, wrapping the result in the MCP protocol, and hosting it. That is weeks of engineering. It also does not end at launch: documentation changes, so something has to re-crawl it, re-embed what moved, skip what did not, and recover from runs that fail halfway — for as long as the server exists.
 
-This node puts that lifecycle in n8n. A workflow can create a server, add and remove sources, trigger a re-index when content changes, and read back the endpoint URL — so the retrieval layer behind your agents becomes something you automate instead of something you maintain by hand.
+MCP Studio handles both the creation and the maintenance, with no code. You give it URLs and get a hosted MCP endpoint in under a minute, queryable straight away while indexing fills in behind it. After that, sources re-index daily on their own, unchanged content is detected and skipped, and a run that fails leaves the previous index fully searchable.
+
+This node puts the remaining decisions in n8n. A workflow can create a server, add and remove sources, force a re-index the moment content ships rather than waiting for the daily one, and read back the endpoint URL — so provisioning happens on a trigger instead of in a browser tab.
 
 ### How it relates to n8n's MCP Client
 
