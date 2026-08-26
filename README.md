@@ -150,6 +150,8 @@ Paid plans add MCP request volume, extra sources, and analytics. Current pricing
 
 Rather than letting a workflow discover a limit by failing, read it: **Account → Get Usage** returns `serversUsed`, `serversLimit`, `mcpCallsUsed`, `mcpCallsLimit`, and `sourcesLimitPerServer`, so an IF node can branch, alert, or queue for later. The fast-start template shows this pattern.
 
+It also returns `upgradeUrl`, and every limit response carries the same field, so a workflow that detects a cap can put a real link in the Slack message or email it sends instead of telling someone to go and find Billing. Source limits additionally return a `purchaseUrl` that goes straight to checkout.
+
 ## Troubleshooting
 
 | What you see | What it means |
