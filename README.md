@@ -199,6 +199,22 @@ npx n8n start
 
 [`docs/local-testing.md`](docs/local-testing.md) is the full end-to-end verification, including pointing the credential at a local MCP Studio instance and confirming the finished endpoint answers a real MCP call.
 
+### Releasing
+
+Releases publish from GitHub Actions, not from a laptop. n8n has required an npm
+provenance attestation for verified community nodes since 1 May 2026, and that
+attestation can only be minted by a CI job holding a short-lived OIDC token.
+
+```bash
+npm version patch
+git push --follow-tags
+```
+
+The tag triggers `.github/workflows/publish.yml`, which builds, lints against the
+publish ruleset, checks the tag matches `package.json`, and runs
+`npm publish --provenance`. It needs an `NPM_TOKEN` repository secret with publish
+rights, or npm Trusted Publishing configured for this repository.
+
 ## Resources
 
 - [MCP Studio](https://appatools.com/mcp-studio)
