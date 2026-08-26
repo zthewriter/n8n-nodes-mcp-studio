@@ -46,7 +46,7 @@ Good fits:
 
 Reach for something else when:
 
-- **You just want to query an existing MCP server.** Use n8n's MCP Client tool. This node does not call MCP tools; it manages the servers that expose them.
+- **You want to query an MCP server rather than build one.** Use n8n's MCP Client tool. This node decides which tools a server exposes, but it never invokes them — tool calls arrive over JSON-RPC from an AI client or an MCP Client tool at query time.
 - **You need one server, once, and will never change it.** The [MCP Studio wizard](https://appatools.com/mcp-studio/studio) is faster for a single manual setup.
 - **Your content is not reachable by URL.** Sources are crawled over HTTP. Files on your laptop or content behind a login the crawler cannot pass are out of scope, with private GitHub repositories the one supported exception.
 
@@ -124,7 +124,7 @@ From there, the shape worth building is event-driven rather than scheduled. MCP 
 
 ### Tools you can enable on a server
 
-Choose between 3 and 10. These are the tools the finished MCP server exposes to AI clients:
+**Server → Create** takes between 3 and 10 of the ten tools below. This is a build-time choice that defines what the finished server can do; AI clients discover those tools and call them themselves at query time.
 
 `search_docs`, `query_source`, `get_code_examples`, `summarize_content`, `find_api_reference`, `get_changelog`, `search_issues`, `get_quickstart`, `extract_schema`, `ask_question`
 
