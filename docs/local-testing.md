@@ -155,16 +155,45 @@ A row with `partnerName = 'n8n'` means plugin-led attribution works. Without it 
 npm pack --dry-run
 ```
 
-The tarball must contain `dist/`, `package.json`, `README.md`, and `LICENSE.md`, and must not contain source `.ts` files, `node_modules`, or source maps.
+Expect `dist/` (compiled node, credential, declarations, source maps, and the
+SVG icon), `workflows/mcp-studio-fast-start.json`, `index.js`, `package.json`,
+`README.md`, and `LICENSE.md`. It must not contain source `.ts` files or
+`node_modules`.
+
+The example workflow has to be in there. The README tells the reader to import
+it, and someone who installed from npm has no repository to find it in.
 
 ## Submitting to n8n
 
 Once every stage above passes:
 
-1. Bump `version` in `package.json`, and update `NODE_VERSION` in `nodes/McpStudio/McpStudio.node.ts` to match. They are checked separately, so a mismatch shows up as misattributed analytics rather than a build error.
-2. Push the repository to GitHub.
-3. Publish: `npm publish --access public`. The `prepublishOnly` script re-runs the build and the strict lint.
-4. Confirm the package appears on npm with the `n8n-community-node-package` keyword, which is what makes it installable through the community nodes panel.
+1. Update `NODE_VERSION` in `nodes/McpStudio/McpStudio.node.ts` to match the
+   version you are about to release. It is read separately from `package.json`,
+   so a mismatch surfaces as misattributed analytics rather than a build error.
+2. Add an `NPM_TOKEN` repository secret with publish rights, or configure npm
+   Trusted Publishing for the repository.
+3. Tag the release. Publishing runs in CI, not locally:
+
+   ```bash
+   npm version patch
+   git push --follow-tags
+   ```
+
+   `.github/workflows/publish.yml` builds, runs the strict lint, refuses to
+   continue if the tag and `package.json` disagree, then runs
+   `npm publish --provenance`.
+4. Confirm the npm page shows the package with the `n8n-community-node-package`
+   keyword and a provenance attestation. The keyword is what makes it
+   installable from the community nodes panel; the attestation is what makes it
+   eligible for verification.
 5. Submit for verification at [creators.n8n.io/nodes](https://creators.n8n.io/nodes).
 
-n8n's [verification guidelines](https://docs.n8n.io/integrations/creating-nodes/build/reference/verification-guidelines/) are worth a final read before submitting. The requirements this package already satisfies: declarative-style node, no runtime dependencies, a credential with a working test, an SVG icon, MIT license, and a README documenting every operation.
+Publishing from a laptop will not do. Since 1 May 2026 n8n only verifies nodes
+published by a CI workflow carrying an npm provenance statement, because the
+attestation depends on a short-lived OIDC token that only CI can obtain.
+
+n8n's [verification guidelines](https://docs.n8n.io/connect/create-nodes/build-your-node/reference/verification-guidelines/)
+are worth a final read. Requirements this package already satisfies: a
+declarative node, no runtime dependencies, a credential with a working test, an
+SVG icon, MIT license, one service per package, and a README documenting every
+operation.
