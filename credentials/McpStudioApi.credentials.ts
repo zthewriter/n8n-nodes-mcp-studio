@@ -10,7 +10,7 @@ export class McpStudioApi implements ICredentialType {
 
 	displayName = 'MCP Studio API';
 
-	documentationUrl = 'https://docs.appatools.com/mcp-studio/reference/n8n';
+	documentationUrl = 'https://docs.appatools.com/mcp-studio/integrations/n8n';
 
 	properties: INodeProperties[] = [
 		{
