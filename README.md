@@ -37,18 +37,10 @@ You do not need to know anything about embeddings, vector search, or the MCP spe
 
 ## When to use it
 
-Good fits:
-
 - Provisioning the same kind of server repeatedly, for many projects, customers, or repositories
 - Reacting to an event so the index is fresh within minutes: a docs site deploys, a release ships, a repo gets a new tag
 - Composing server management with the rest of a pipeline — notify Slack when indexing completes, open a ticket when a source errors, record the endpoint in a database
 - Gating on plan limits inside a workflow rather than discovering them through a failed run
-
-Reach for something else when:
-
-- **You want to query an MCP server rather than build one.** Use n8n's MCP Client tool. This node decides which tools a server exposes, but it never invokes them — tool calls arrive over JSON-RPC from an AI client or an MCP Client tool at query time.
-- **You need one server, once, and will never change it.** The [MCP Studio wizard](https://appatools.com/mcp-studio/studio) is faster for a single manual setup.
-- **Your content is not reachable by URL.** Sources are crawled over HTTP. Files on your laptop or content behind a login the crawler cannot pass are out of scope, with private GitHub repositories the one supported exception.
 
 ## Installation
 
