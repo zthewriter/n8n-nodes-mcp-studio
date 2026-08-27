@@ -2,7 +2,7 @@
 	"node": "n8n-nodes-mcp-studio.mcpStudio",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["Development", "AI"],
+	"categories": ["AI", "Development", "Productivity"],
 	"resources": {
 		"credentialDocumentation": [
 			{
@@ -11,7 +11,7 @@
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://docs.appatools.com/mcp-studio"
+				"url": "https://docs.appatools.com/mcp-studio/integrations/n8n"
 			}
 		]
 	}

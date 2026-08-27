@@ -4,7 +4,9 @@ const { task, src, dest } = require('gulp');
 task('build:icons', copyIcons);
 
 function copyIcons() {
-	const nodeSource = path.resolve('nodes', '**', '*.{png,svg}');
+	// The codex (`*.node.json`) ships alongside the icons because tsc does not
+	// emit it, and without it in dist n8n never reads the documentation links.
+	const nodeSource = path.resolve('nodes', '**', '*.{png,svg,json}');
 	const nodeDestination = path.resolve('dist', 'nodes');
 
 	src(nodeSource, { encoding: false }).pipe(dest(nodeDestination));

@@ -6,9 +6,15 @@ The order matters: each stage depends on the one before it, and stopping at the 
 
 ## Prerequisites
 
-- Node.js 20 or later (`node -v`)
 - An MCP Studio account
 - Either the production MCP Studio at `https://appatools.com/mcp-studio`, or a local instance
+- Node.js 24 or later to *run* n8n. Current n8n requires it, and it fails to start on Node 20 with a version error rather than anything descriptive:
+
+  ```bash
+  nvm install 24 && nvm use 24 && node -v
+  ```
+
+  The node package itself builds on Node 20 and later. It is n8n that needs 24. Do the linking in step 2 under the same Node version you start n8n with, because `npm link` targets a version-specific global prefix and a link made under one version is invisible to the other.
 
 ## 1. Build the node
 
@@ -22,17 +28,22 @@ npx eslint -c .eslintrc.prepublish.js nodes credentials package.json
 
 All four must succeed. The last command is the stricter ruleset n8n applies at publish time, and it is the one that catches the description-wording rules their reviewers check.
 
-Confirm `dist/` contains the compiled node, the credential, and the SVG icon:
+Confirm `dist/` contains the compiled node, the credential, the icon, and the codex:
 
 ```bash
 find dist -type f
 ```
 
-The icon matters: a node whose icon failed to copy still loads, but shows a blank square in the editor.
+Two files there are copied by gulp rather than emitted by tsc, and both fail
+silently if the copy step breaks. `appaTools.png` missing leaves the node
+loadable but drawn as a blank square. `McpStudio.node.json` missing leaves it
+working but with no documentation links in the node details panel.
 
 ## 2. Link the node into a local n8n
 
 ```bash
+nvm use 24
+
 cd ~/n8n-nodes-mcp-studio
 npm link
 
@@ -43,7 +54,7 @@ npm link n8n-nodes-mcp-studio
 npx n8n start
 ```
 
-Open http://localhost:5678. Add a node and search for "MCP Studio". If it does not appear, the link did not take — check that `~/.n8n/nodes/node_modules/n8n-nodes-mcp-studio` exists and points at your build.
+Open http://localhost:5678. Add a node and search for "AI Context" or "MCP". It appears as **AI Context by MCP Studio** with the Appa Tools axolotl as its icon. If it does not appear, the link did not take — check that `~/.n8n/nodes/node_modules/n8n-nodes-mcp-studio` exists and points at your build, and that you linked under the same Node version you started n8n with.
 
 After any code change, run `npm run build` and restart n8n. The editor caches node descriptions, so a hard refresh of the browser helps too.
 
@@ -115,8 +126,23 @@ A `result.content` array with text from your source means the node created a wor
 | Server → Refresh | server slug | `started: true` with a `queued` count |
 | Server → Refresh | slug plus a source ID | Only that source re-queued |
 | Source → Remove | slug plus source ID | `{ ok: true, removed: 1 }` |
+| Tool → Get Many | server slug | The 3 tools you created it with, the 10-entry `available` catalogue, and `minTools`/`maxTools` |
+| Tool → Add | slug plus one unused tool | `added` names it, `tools` now has 4 |
+| Tool → Add | the same tool again | `added` is empty and nothing changes |
+| Tool → Remove | slug plus that tool | `removed` names it, back to 3 |
+| Tool → Replace | slug plus 4 tools | `tools` is exactly those 4 |
+| Analytics → Get | server slug | `totalCalls`, `successRate`, `toolUsage`, `clientUsage`, `callsOverTime`, `tier: "free"` |
 | Account → Get Entitlements | none | Trial state and analytics tier |
 | Server → Delete | server slug | `ok: true` with `purgeAt` 7 days out |
+
+Run **Analytics → Get** after step 6, not before: a server nobody has queried
+reports zeros, which proves the wiring but tells you nothing. Once your `curl`
+calls have landed, `clientUsage` should show `cURL` and `toolUsage` should show
+the tool you called.
+
+After a **Tool → Add**, re-run the `tools/list` call from step 6 against the
+endpoint. The new tool appears without a re-index and without the URL changing,
+which is the point of the operation.
 
 ## 8. Check the error paths
 
@@ -126,6 +152,8 @@ These matter more than the happy path for review, because they are what a user a
 |---|---|
 | Revoke the key in MCP Studio, re-run any node | `401 Authentication required` |
 | Create with 2 tools selected | `400 Select between 3 and 10 tools` |
+| Tool → Remove enough tools to leave 2 | `400 An MCP server needs at least 3 tools`, and the selection is unchanged |
+| Tool → Get Many for another account's server | `404 Server not found`, never a tool list |
 | Create with more sources than your tier allows | `402 source_limit` with the limit in the message |
 | Get with a slug that does not exist | `404 Server not found` |
 | Add a source that already exists on the server | `409 Source already exists` |
@@ -155,10 +183,10 @@ A row with `partnerName = 'n8n'` means plugin-led attribution works. Without it 
 npm pack --dry-run
 ```
 
-Expect `dist/` (compiled node, credential, declarations, source maps, and the
-SVG icon), `workflows/mcp-studio-fast-start.json`, `index.js`, `package.json`,
-`README.md`, and `LICENSE.md`. It must not contain source `.ts` files or
-`node_modules`.
+Expect `dist/` (compiled node, credential, declarations, source maps, the icon,
+and the codex JSON), `workflows/mcp-studio-fast-start.json`, `index.js`,
+`package.json`, `README.md`, and `LICENSE.md`. It must not contain source `.ts`
+files or `node_modules`.
 
 The example workflow has to be in there. The README tells the reader to import
 it, and someone who installed from npm has no repository to find it in.
@@ -194,6 +222,12 @@ attestation depends on a short-lived OIDC token that only CI can obtain.
 
 n8n's [verification guidelines](https://docs.n8n.io/connect/create-nodes/build-your-node/reference/verification-guidelines/)
 are worth a final read. Requirements this package already satisfies: a
-declarative node, no runtime dependencies, a credential with a working test, an
-SVG icon, MIT license, one service per package, and a README documenting every
-operation.
+declarative node, no runtime dependencies, a credential with a working test, a
+square icon, MIT license, one service per package, and a README documenting
+every operation.
+
+The icon is a PNG rather than an SVG. n8n's own documentation is explicit that
+SVG is recommended and PNG is accepted, and n8n's built-in nodes ship dozens of
+PNG icons, so this is not a verification blocker. The legacy lint rule that
+errored on any non-SVG icon is disabled in `.eslintrc.js` with that reasoning
+recorded; n8n has since removed the same check from its current plugin.

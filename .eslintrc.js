@@ -43,6 +43,12 @@ module.exports = {
 				'n8n-nodes-base/node-execute-block-missing-continue-on-fail': 'off',
 				'n8n-nodes-base/node-resource-description-filename-against-convention': 'off',
 				'n8n-nodes-base/node-param-fixed-collection-type-unsorted-items': 'off',
+				// n8n's documented policy is that SVG is recommended and PNG is allowed,
+				// and n8n's own built-in nodes ship dozens of PNG icons. This rule
+				// predates that and errors on any non-SVG, which would block the
+				// prepublish build over an icon n8n accepts. The Appa Tools logo is
+				// raster artwork, so PNG is the honest format for it.
+				'n8n-nodes-base/node-class-description-icon-not-svg': 'off',
 			},
 		},
 	],
