@@ -50,22 +50,34 @@ meaningful.
 Installing an unverified package from the UI needs
 `N8N_UNVERIFIED_PACKAGES_ENABLED=true`, which is the current default.
 
-### 2. Pre-create a fully indexed server
+### 2. Point workflows 2 and 3 at a server that has finished indexing
 
-Indexing is asynchronous and a real corpus takes longer than the whole video. So
-workflow 1 creates a server live and honestly shows it still indexing, while
-workflows 2 and 3 point at a server you created **at least an hour earlier** that
-has finished.
-
-Create that one now, in the dashboard or by running workflow 1, and let it index.
-Then make a handful of MCP requests against it so the metrics in workflow 2 have
-real numbers instead of zeros. Running workflow 2 a few times during rehearsal is
-enough.
+Indexing is asynchronous and a real corpus takes longer than the whole video, so
+nothing in the recording waits for it. Any server you already built in the MCP
+Studio UI works here — the API cannot tell how a server was created, so
+UI-created and node-created servers are interchangeable.
 
 Put its slug into:
 
 - workflow 2, the **Which server** node, `slug`
 - workflow 3, both `REPLACE_WITH_YOUR_SERVER_SLUG` placeholders
+
+Make a handful of MCP requests against it beforehand so the metrics in workflow 2
+show real numbers rather than zeros. Rehearsing workflow 2 a few times is enough.
+
+**Only three things need indexed content:** the JSON-RPC call and Analytics in
+workflow 2, and the agent in workflow 3. Everything in workflow 1 — Create,
+Source add, Tool add, Server get — returns immediately, because those are
+metadata operations that only queue indexing rather than wait on it.
+
+That is why workflow 1 keeps its Tool and Source steps on the server it just
+created instead of borrowing your existing one. Running them against a live
+server would gain nothing, and it risks two things on camera: the free tier's
+2-source cap rejecting the add, and mutating a server you actually depend on.
+
+Workflow 1 therefore ends on a server that is still indexing. Say so out loud
+rather than working around it — asynchronous indexing is the honest shape of the
+product, and a reviewer who sees it explained will not read it as a defect.
 
 ### 3. Watch the free-tier limits
 
@@ -115,6 +127,10 @@ Open `1 · Provision agent context` and execute. Walk the outputs left to right:
   connected agents on their next request with no re-index and no new URL.
 - **Get endpoint and progress** — the endpoint to point an agent at, and indexing
   still in progress. Say that plainly; it is the honest shape of the product.
+
+Worth mentioning aloud that Source and Tool each have a matching remove, and that
+Server has Get Many, Delete and Refresh. Demonstrating them costs time the video
+does not have, but naming them shows the resource coverage is not one-directional.
 
 **3:00 – 3:45 · Workflow 2, consume it and observe it**
 
