@@ -16,7 +16,7 @@
             {
               "id": "d2000000-00a1-4000-8000-0000000000a1",
               "name": "slug",
-              "value": "REPLACE_WITH_YOUR_SERVER_SLUG",
+              "value": "metabase-docs-mcp-16m0qv",
               "type": "string"
             },
             {
@@ -43,7 +43,7 @@
         "url": "={{ $json.baseUrl }}/api/mcp/{{ $json.slug }}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_docs', arguments: { query: 'How do I add a source to an MCP server?' } } }) }}",
+        "jsonBody": "={{ JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_docs', arguments: { query: 'How do I create a dashboard?' } } }) }}",
         "options": {}
       },
       "id": "d2000000-0003-4000-8000-000000000003",
