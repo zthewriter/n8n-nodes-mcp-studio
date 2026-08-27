@@ -1,5 +1,5 @@
 {
-  "name": "MCP Studio fast start",
+  "name": "AI Context fast start",
   "nodes": [
     {
       "parameters": {},
@@ -60,7 +60,7 @@
       "parameters": {
         "resource": "server",
         "operation": "create",
-        "name": "Product Docs",
+        "name": "Agent Context",
         "sources": {
           "source": [
             {

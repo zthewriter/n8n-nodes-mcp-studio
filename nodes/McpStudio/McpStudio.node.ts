@@ -5,7 +5,7 @@ import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
  * Studio can attribute activation and conversion to a specific node release,
  * which is what makes a regression in one version visible.
  */
-const NODE_VERSION = '0.1.0';
+const NODE_VERSION = '0.2.0';
 
 const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Auto-Detect', value: '' },
@@ -13,6 +13,7 @@ const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Documentation Site', value: 'docs' },
 	{ name: 'GitHub Repository', value: 'github' },
 	{ name: 'MCP Server', value: 'mcp' },
+	{ name: 'PDF Document', value: 'pdf' },
 	{ name: 'Website', value: 'website' },
 ];
 
@@ -31,15 +32,17 @@ const TOOL_OPTIONS = [
 
 export class McpStudio implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'MCP Studio',
+		displayName: 'AI Context by MCP Studio',
+		// Never change: this is the type identifier stored in saved workflows.
 		name: 'mcpStudio',
-		icon: 'file:mcpStudio.svg',
+		icon: 'file:appaTools.png',
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Create and manage MCP Studio servers that turn documentation into a live MCP endpoint',
+		description:
+			'Give AI agents persistent context from your docs, code, PDFs, and internal tools through a live MCP server',
 		defaults: {
-			name: 'MCP Studio',
+			name: 'AI Context',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
@@ -72,8 +75,10 @@ export class McpStudio implements INodeType {
 				noDataExpression: true,
 				options: [
 					{ name: 'Account', value: 'account' },
+					{ name: 'Analytics', value: 'analytics' },
 					{ name: 'Server', value: 'server' },
 					{ name: 'Source', value: 'source' },
+					{ name: 'Tool', value: 'tool' },
 				],
 				default: 'server',
 			},
@@ -165,7 +170,7 @@ export class McpStudio implements INodeType {
 				type: 'string',
 				default: '',
 				required: true,
-				placeholder: 'Product Docs',
+				placeholder: 'Engineering Context',
 				description: 'Name for the new MCP server. Also used to derive its public slug.',
 				displayOptions: { show: { resource: ['server'], operation: ['create'] } },
 			},
@@ -177,7 +182,7 @@ export class McpStudio implements INodeType {
 				default: {},
 				placeholder: 'Add Source',
 				description:
-					'Documentation URLs, GitHub repositories, or websites to index. The free tier allows 2 sources per server, or 5 on your first server during the trial.',
+					'What the agent should read before it acts: documentation, a GitHub repository, a PDF, a published spec or runbook, another MCP server, or any website. The free tier allows 2 sources per server, or 5 on your first server during the trial.',
 				displayOptions: { show: { resource: ['server'], operation: ['create'] } },
 				options: [
 					{
@@ -219,7 +224,8 @@ export class McpStudio implements INodeType {
 				options: TOOL_OPTIONS,
 				default: ['search_docs', 'get_code_examples', 'ask_question'],
 				required: true,
-				description: 'Tools the MCP server exposes to AI clients. Choose between 3 and 10.',
+				description:
+					'Tools the MCP server exposes to AI clients. Choose between 3 and 10. Use the Tool resource to change them later without recreating the server.',
 				displayOptions: { show: { resource: ['server'], operation: ['create'] } },
 			},
 			{
@@ -245,7 +251,7 @@ export class McpStudio implements INodeType {
 				type: 'string',
 				default: '',
 				required: true,
-				placeholder: 'product-docs-a1b2',
+				placeholder: 'engineering-context-a1b2',
 				description: 'The server ID or its slug. Both are returned by Create and Get Many.',
 				displayOptions: {
 					show: { resource: ['server'], operation: ['get', 'delete', 'refresh'] },
@@ -372,6 +378,124 @@ export class McpStudio implements INodeType {
 				default: '',
 				description: 'URL of the source to remove. Used when no source ID is given.',
 				displayOptions: { show: { resource: ['source'], operation: ['remove'] } },
+			},
+
+			// ─── Tool ──────────────────────────────────────────────
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['tool'] } },
+				options: [
+					{
+						name: 'Add',
+						value: 'add',
+						action: 'Add tools to a server',
+						description: 'Enable more tools on an existing server. Tools already enabled are left alone.',
+						routing: {
+							request: {
+								method: 'PATCH',
+								url: '=/api/mcp/{{$parameter["serverId"]}}/tools',
+								body: {
+									add: '={{$parameter["toolNames"]}}',
+								},
+							},
+						},
+					},
+					{
+						name: 'Get Many',
+						value: 'getAll',
+						action: 'Get many tools',
+						description: 'Return the tools a server exposes today, plus the full catalog it can choose from',
+						routing: {
+							request: {
+								method: 'GET',
+								url: '=/api/mcp/{{$parameter["serverId"]}}/tools',
+							},
+						},
+					},
+					{
+						name: 'Remove',
+						value: 'remove',
+						action: 'Remove tools from a server',
+						description: 'Disable tools on an existing server. At least 3 have to remain.',
+						routing: {
+							request: {
+								method: 'PATCH',
+								url: '=/api/mcp/{{$parameter["serverId"]}}/tools',
+								body: {
+									remove: '={{$parameter["toolNames"]}}',
+								},
+							},
+						},
+					},
+					{
+						name: 'Replace',
+						value: 'replace',
+						action: 'Replace the tools on a server',
+						description: 'Set the exact tool list, whatever was enabled before',
+						routing: {
+							request: {
+								method: 'PATCH',
+								url: '=/api/mcp/{{$parameter["serverId"]}}/tools',
+								body: {
+									tools: '={{$parameter["toolNames"]}}',
+								},
+							},
+						},
+					},
+				],
+				default: 'getAll',
+			},
+			{
+				displayName: 'Tools',
+				name: 'toolNames',
+				type: 'multiOptions',
+				options: TOOL_OPTIONS,
+				default: [],
+				required: true,
+				description:
+					'Tools to apply. Changes reach connected agents on their next request, with no re-index and no new endpoint URL.',
+				displayOptions: { show: { resource: ['tool'], operation: ['add', 'remove', 'replace'] } },
+			},
+
+			// ─── Analytics ─────────────────────────────────────────
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['analytics'] } },
+				options: [
+					{
+						name: 'Get',
+						value: 'get',
+						action: 'Get MCP server metrics',
+						description:
+							'Return request volume, success rate, latency, and the tool, source, and client breakdowns for one server',
+						routing: {
+							request: {
+								method: 'GET',
+								url: '=/api/analytics/{{$parameter["serverId"]}}/summary',
+							},
+						},
+					},
+				],
+				default: 'get',
+			},
+
+			// Shared by the two read-and-change resources, which both address a
+			// server the same way.
+			{
+				displayName: 'Server ID or Slug',
+				name: 'serverId',
+				type: 'string',
+				default: '',
+				required: true,
+				placeholder: 'engineering-context-a1b2',
+				description: 'The server to read or change. The ID and the slug both work.',
+				displayOptions: { show: { resource: ['analytics', 'tool'] } },
 			},
 
 			// ─── Account ───────────────────────────────────────────

@@ -1,13 +1,16 @@
 {
   "name": "n8n-nodes-mcp-studio",
-  "version": "0.1.0",
-  "description": "Create and manage MCP Studio servers from n8n workflows. Turn documentation, GitHub repos, and websites into a live Model Context Protocol endpoint without writing code.",
+  "version": "0.2.0",
+  "description": "Give AI agents persistent context in n8n. Turn docs, code repositories, PDFs, specs, and other MCP servers into a live Model Context Protocol endpoint your workflows and agents read before they act, without writing code.",
   "keywords": [
     "n8n-community-node-package",
     "n8n",
     "mcp",
     "model-context-protocol",
     "mcp-studio",
+    "ai-agent",
+    "ai-context",
+    "context-engineering",
     "documentation",
     "rag"
   ],
