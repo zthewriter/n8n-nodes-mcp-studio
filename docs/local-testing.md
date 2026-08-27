@@ -64,7 +64,7 @@ In MCP Studio, go to **Account → API Keys**, set the label to `n8n local test`
 
 ## 4. Verify the credential
 
-In n8n, create an **MCP Studio API** credential:
+In n8n, create an **AI Context by MCP Studio API** credential:
 
 - **API Key**: the `msk_live_…` value you just copied
 - **Base URL**: `https://appatools.com/mcp-studio`
