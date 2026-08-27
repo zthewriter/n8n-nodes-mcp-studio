@@ -13,11 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # Node 24, not the 20 in `engines`. That field describes the runtime a user's
+      # n8n needs to run the built node; this is the toolchain that builds it, and
+      # @n8n/node-cli pulls in isolated-vm, which requires 24.
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install
         run: npm ci

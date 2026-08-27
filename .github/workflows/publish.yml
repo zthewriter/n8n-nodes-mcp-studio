@@ -22,11 +22,14 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # Node 24 rather than the 20 in `engines`: that field is the runtime a user's
+      # n8n needs, this is the toolchain. @n8n/node-cli needs 24, and 24 ships
+      # npm 11, which is the floor for OIDC trusted publishing.
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
           # Required for npm auth even when the token comes from a secret.
           registry-url: https://registry.npmjs.org
 
