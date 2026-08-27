@@ -1,0 +1,138 @@
+{
+  "name": "1 · Provision agent context",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d1000000-0001-4000-8000-000000000001",
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-320, 0]
+    },
+    {
+      "parameters": {
+        "resource": "account",
+        "operation": "getUsage"
+      },
+      "id": "d1000000-0002-4000-8000-000000000002",
+      "name": "Check plan and headroom",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [-100, 0],
+      "notesInFlow": true,
+      "notes": "Plan, usage and limits, so a workflow can branch before it hits a cap"
+    },
+    {
+      "parameters": {
+        "resource": "server",
+        "operation": "create",
+        "name": "Support Agent Context",
+        "sources": {
+          "source": [
+            {
+              "url": "https://docs.appatools.com/mcp-studio",
+              "type": "docs",
+              "label": "Product docs"
+            }
+          ]
+        },
+        "tools": ["search_docs", "get_code_examples", "ask_question"],
+        "additionalFields": {
+          "description": "Context the support agent reads before answering. Provisioned from n8n."
+        }
+      },
+      "id": "d1000000-0003-4000-8000-000000000003",
+      "name": "Create context server",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [120, 0],
+      "notesInFlow": true,
+      "notes": "Creates the MCP server and queues the first source for indexing"
+    },
+    {
+      "parameters": {
+        "resource": "source",
+        "operation": "add",
+        "serverId": "={{ $('Create context server').item.json.slug }}",
+        "url": "https://github.com/zthewriter/n8n-nodes-mcp-studio",
+        "sourceOptions": {
+          "type": "github",
+          "label": "Integration source code"
+        }
+      },
+      "id": "d1000000-0004-4000-8000-000000000004",
+      "name": "Add a code repository",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [340, 0],
+      "notesInFlow": true,
+      "notes": "Context is not only docs: a repo, a PDF or another MCP server all work"
+    },
+    {
+      "parameters": {
+        "resource": "tool",
+        "operation": "getAll",
+        "serverId": "={{ $('Create context server').item.json.slug }}"
+      },
+      "id": "d1000000-0005-4000-8000-000000000005",
+      "name": "List tools and catalog",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [560, 0],
+      "notesInFlow": true,
+      "notes": "What the server exposes today, plus everything it could expose"
+    },
+    {
+      "parameters": {
+        "resource": "tool",
+        "operation": "add",
+        "serverId": "={{ $('Create context server').item.json.slug }}",
+        "toolNames": ["get_quickstart", "get_changelog"]
+      },
+      "id": "d1000000-0006-4000-8000-000000000006",
+      "name": "Enable two more tools",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [780, 0],
+      "notesInFlow": true,
+      "notes": "Live for connected agents on their next request. No re-index, no new URL."
+    },
+    {
+      "parameters": {
+        "resource": "server",
+        "operation": "get",
+        "serverId": "={{ $('Create context server').item.json.slug }}"
+      },
+      "id": "d1000000-0007-4000-8000-000000000007",
+      "name": "Get endpoint and progress",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [1000, 0],
+      "notesInFlow": true,
+      "notes": "Returns the MCP endpoint URL to point an agent at, and indexing progress"
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [[{ "node": "Check plan and headroom", "type": "main", "index": 0 }]]
+    },
+    "Check plan and headroom": {
+      "main": [[{ "node": "Create context server", "type": "main", "index": 0 }]]
+    },
+    "Create context server": {
+      "main": [[{ "node": "Add a code repository", "type": "main", "index": 0 }]]
+    },
+    "Add a code repository": {
+      "main": [[{ "node": "List tools and catalog", "type": "main", "index": 0 }]]
+    },
+    "List tools and catalog": {
+      "main": [[{ "node": "Enable two more tools", "type": "main", "index": 0 }]]
+    },
+    "Enable two more tools": {
+      "main": [[{ "node": "Get endpoint and progress", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false }
+}
