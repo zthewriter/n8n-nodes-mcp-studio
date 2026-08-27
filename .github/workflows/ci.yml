@@ -13,11 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      # Node 24, not the 20 in `engines`. That field describes the runtime a user's
+      # n8n needs to run the built node; this is the toolchain that builds it, and
+      # @n8n/node-cli pulls in isolated-vm, which requires 24.
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install
         run: npm ci
@@ -32,6 +35,12 @@ jobs:
       # means a release cannot fail on a rule that was already broken on main.
       - name: Lint against the publish ruleset
         run: npx eslint -c .eslintrc.prepublish.js nodes credentials package.json
+
+      # n8n's own checker, which is what a verification reviewer runs. Failing it
+      # here is cheaper than failing it in their review queue, where a rejection
+      # costs days rather than a re-push.
+      - name: Lint against n8n's verification checks
+        run: npm run lint:n8n
 
       - name: Confirm the package contents
         run: npm pack --dry-run
