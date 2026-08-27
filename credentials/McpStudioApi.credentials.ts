@@ -6,9 +6,11 @@ import type {
 } from 'n8n-workflow';
 
 export class McpStudioApi implements ICredentialType {
+	// Never change: this is the identifier stored in saved workflows.
 	name = 'mcpStudioApi';
 
-	displayName = 'MCP Studio API';
+	// Matches the node name, with the 'API' suffix n8n's credential lint requires.
+	displayName = 'AI Context by MCP Studio API';
 
 	documentationUrl = 'https://docs.appatools.com/mcp-studio/integrations/n8n';
 

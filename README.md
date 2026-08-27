@@ -94,7 +94,7 @@ An MCP Studio account is required before the node can do anything. This is by de
 1. Create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration).
 2. Go to **Account → API Keys** and create a key. Set **Used from** to **n8n**.
 3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — MCP Studio stores only a hash of it, so a lost key can be replaced but never recovered.
-4. In n8n, create an **MCP Studio API** credential and paste the key. Leave **Base URL** at its default unless you are testing against a local instance.
+4. In n8n, create an **AI Context by MCP Studio API** credential and paste the key. Leave **Base URL** at its default unless you are testing against a local instance.
 5. Click **Test**. Success returns your current plan and usage.
 
 A key acts on your account with your plan's limits. Treat it like a password, and revoke it from the same screen if it leaks.
