@@ -1,0 +1,86 @@
+{
+  "name": "2 · Consume the context, then observe it",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d2000000-0001-4000-8000-000000000001",
+      "name": "When clicking Test workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [-320, 0]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d2000000-00a1-4000-8000-0000000000a1",
+              "name": "slug",
+              "value": "REPLACE_WITH_YOUR_SERVER_SLUG",
+              "type": "string"
+            },
+            {
+              "id": "d2000000-00a2-4000-8000-0000000000a2",
+              "name": "baseUrl",
+              "value": "https://appatools.com/mcp-studio",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "d2000000-0002-4000-8000-000000000002",
+      "name": "Which server",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-100, 0],
+      "notesInFlow": true,
+      "notes": "One place to set the server. Use a slug whose indexing has finished."
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.baseUrl }}/api/mcp/{{ $json.slug }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'search_docs', arguments: { query: 'How do I add a source to an MCP server?' } } }) }}",
+        "options": {}
+      },
+      "id": "d2000000-0003-4000-8000-000000000003",
+      "name": "Ask the MCP server",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [120, 0],
+      "notesInFlow": true,
+      "notes": "The same JSON-RPC call Cursor or Claude would make. No API key: the MCP endpoint is public."
+    },
+    {
+      "parameters": {
+        "resource": "analytics",
+        "operation": "get",
+        "serverId": "={{ $('Which server').item.json.slug }}"
+      },
+      "id": "d2000000-0004-4000-8000-000000000004",
+      "name": "Read the metrics",
+      "type": "n8n-nodes-mcp-studio.mcpStudio",
+      "typeVersion": 1,
+      "position": [340, 0],
+      "notesInFlow": true,
+      "notes": "The request above is already counted here. Also shows which sources get cited and which never do."
+    }
+  ],
+  "connections": {
+    "When clicking Test workflow": {
+      "main": [[{ "node": "Which server", "type": "main", "index": 0 }]]
+    },
+    "Which server": {
+      "main": [[{ "node": "Ask the MCP server", "type": "main", "index": 0 }]]
+    },
+    "Ask the MCP server": {
+      "main": [[{ "node": "Read the metrics", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false }
+}
