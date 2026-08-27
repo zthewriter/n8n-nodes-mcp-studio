@@ -16,7 +16,7 @@
       "parameters": {
         "promptType": "auto",
         "options": {
-          "systemMessage": "You answer support questions about MCP Studio.\n\nUse the product_context tool to look up anything factual before you answer, and quote what it returns rather than recalling it. If the operator asks how the context server itself is performing, use the context_metrics tool.\n\nIf the context does not contain the answer, say so plainly instead of guessing."
+          "systemMessage": "You answer support questions about Metabase.\n\nUse the product_context tool to look up anything factual before you answer, and quote what it returns rather than recalling it. Cite the source URL it gives you. If the operator asks how the context server itself is performing, use the context_metrics tool instead.\n\nIf the context does not contain the answer, say so plainly instead of guessing. You are grounded in the indexed documentation, not in what you happen to remember about Metabase."
         }
       },
       "id": "d3000000-0002-4000-8000-000000000002",
@@ -37,7 +37,7 @@
     },
     {
       "parameters": {
-        "endpointUrl": "https://appatools.com/mcp-studio/api/mcp/REPLACE_WITH_YOUR_SERVER_SLUG",
+        "endpointUrl": "https://appatools.com/mcp-studio/api/mcp/metabase-docs-mcp-16m0qv",
         "authentication": "none",
         "include": "all",
         "options": {}
@@ -56,7 +56,7 @@
         "toolDescription": "Returns request volume, success rate, latency and which sources are being cited for the MCP context server. Use when asked how the context server is performing.",
         "resource": "analytics",
         "operation": "get",
-        "serverId": "REPLACE_WITH_YOUR_SERVER_SLUG"
+        "serverId": "metabase-docs-mcp-16m0qv"
       },
       "id": "d3000000-0005-4000-8000-000000000005",
       "name": "context_metrics",

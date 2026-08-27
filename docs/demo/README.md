@@ -57,13 +57,17 @@ nothing in the recording waits for it. Any server you already built in the MCP
 Studio UI works here — the API cannot tell how a server was created, so
 UI-created and node-created servers are interchangeable.
 
-Put its slug into:
-
-- workflow 2, the **Which server** node, `slug`
-- workflow 3, both `REPLACE_WITH_YOUR_SERVER_SLUG` placeholders
+Workflows 2 and 3 are already pointed at `metabase-docs-mcp-16m0qv`, which is
+indexed and answering. To use a different server, change the slug in workflow 2's
+**Which server** node, and in workflow 3 in both the `product_context` endpoint
+URL and the `context_metrics` server field.
 
 Make a handful of MCP requests against it beforehand so the metrics in workflow 2
 show real numbers rather than zeros. Rehearsing workflow 2 a few times is enough.
+
+Whatever server you use, the questions have to suit its corpus. A Metabase docs
+server asked about MCP Studio returns nothing, and an empty result on camera reads
+as a broken node rather than a well-aimed query.
 
 **Only three things need indexed content:** the JSON-RPC call and Analytics in
 workflow 2, and the agent in workflow 3. Everything in workflow 1 — Create,
@@ -137,8 +141,10 @@ does not have, but naming them shows the resource coverage is not one-directiona
 Open `2 · Consume the context, then observe it` and execute.
 
 - **Ask the MCP server** — the same JSON-RPC request Cursor or Claude Desktop
-  would send. Show the answer and its citations. No API key here: the MCP
-  endpoint is public, the key is only for managing the account.
+  would send, asking *"How do I create a dashboard?"*. It returns about 6,000
+  characters of ranked passages, each with a `Source:` URL. Show the citations.
+  No API key here: the MCP endpoint is public, the key is only for managing the
+  account.
 - **Read the metrics** — the request you just made is already counted. Point at
   `sourceUsage` and `citedSources`: a source that never gets cited is either
   badly targeted or badly written, and that is the loop this closes.
@@ -148,7 +154,15 @@ Open `2 · Consume the context, then observe it` and execute.
 Open `3 · Support agent grounded in your context` and open the chat.
 
 Ask a product question first, so `product_context` fires and the answer is
-grounded in the indexed docs.
+grounded in the indexed docs. Use *"How do I create a public link to share a
+dashboard?"* — it returns three passages that are squarely on topic, all labelled
+current docs, so the citation is unambiguous on screen.
+
+If you have a spare fifteen seconds, *"How do I configure row-level permissions
+with sandboxing?"* is worth asking too. It surfaces passages tagged
+**version-pinned docs (v0.46) — may not reflect the current release**, which shows
+the retrieval layer tracking doc versions rather than blending releases together.
+Few nodes have anything comparable to show a reviewer.
 
 Then ask: *"How is the context server performing, and are any sources not being
 cited?"* The agent calls **context_metrics** — the AI Context node itself,
