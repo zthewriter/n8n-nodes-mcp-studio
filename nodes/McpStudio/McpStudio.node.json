@@ -2,7 +2,20 @@
 	"node": "n8n-nodes-mcp-studio.mcpStudio",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["AI", "Development", "Productivity"],
+	"categories": ["Development", "Productivity"],
+	"alias": [
+		"AI Context",
+		"Context",
+		"MCP",
+		"MCP Studio",
+		"Model Context Protocol",
+		"Appa Tools",
+		"Grounding",
+		"RAG",
+		"Embeddings",
+		"Documentation",
+		"Agent Memory"
+	],
 	"resources": {
 		"credentialDocumentation": [
 			{
