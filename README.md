@@ -92,7 +92,7 @@ Restart n8n afterwards. The node appears as **AI Context by MCP Studio**.
 An MCP Studio account is required before the node can do anything. This is by design: the servers it creates are hosted, billed, and scoped to your account.
 
 1. Create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration).
-2. Go to **Account → API Keys** and create a key. Set **Used from** to **n8n**.
+2. Open [**Account → API Keys**](https://appatools.com/mcp-studio/account/api-keys) and create a key. Set **Used from** to **n8n**.
 3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — MCP Studio stores only a hash of it, so a lost key can be replaced but never recovered.
 4. In n8n, create an **AI Context by MCP Studio API** credential and paste the key. Leave **Base URL** at its default unless you are testing against a local instance.
 5. Click **Test**. Success returns your current plan and usage.
@@ -231,7 +231,13 @@ A private repository needs a linked GitHub account, and that link is a browser O
 
 ## Compatibility
 
-Tested against n8n 1.x on Node.js 20 and later. The node uses n8n's declarative routing and has no runtime dependencies of its own.
+Verified against n8n 2.36 on Node.js 24, and compatible with n8n 1.x. The `n8n-workflow`
+peer dependency is deliberately unpinned and the node uses declarative routing only, so it
+carries no runtime dependencies of its own and nothing to conflict with your n8n version.
+
+`engines` asks for Node.js 20.15 or later, which is the floor n8n itself sets. Building the
+node from source needs Node.js 24, because the `@n8n/node-cli` toolchain does — that is a
+requirement for contributors, not for running it.
 
 ## Privacy
 
