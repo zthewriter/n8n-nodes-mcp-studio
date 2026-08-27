@@ -92,7 +92,7 @@ Restart n8n afterwards. The node appears as **AI Context by MCP Studio**.
 An MCP Studio account is required before the node can do anything. This is by design: the servers it creates are hosted, billed, and scoped to your account.
 
 1. Create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration).
-2. Open [**Account → API Keys**](https://appatools.com/mcp-studio/account/api-keys) and create a key. Set **Used from** to **n8n**.
+2. Open [**Account → API Keys**](https://appatools.com/mcp-studio/account/api-keys) and create a key. Set **Used from** to **n8n**. Under **Can reach**, keep the key account-wide, or limit it to specific servers so a workflow that only reads one server cannot touch the rest of your account.
 3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — MCP Studio stores only a hash of it, so a lost key can be replaced but never recovered.
 4. In n8n, create an **AI Context by MCP Studio API** credential and paste the key. Leave **Base URL** at its default unless you are testing against a local instance.
 5. Click **Test**. Success returns your current plan and usage.
@@ -187,7 +187,9 @@ Per-request detail — the exact passage returned for a given question, content 
 
 **The endpoint works before indexing finishes.** It simply has less content to search, and gets better as pages land. Poll **Server → Get** and watch each source's `crawlStatus`, which moves `pending` → `crawling` → `complete`, or `error` if the crawl failed. The `indexing` object alongside it reports `pagesIndexed`, `chunksIndexed`, and `embeddingCoveragePct` as work lands.
 
-**Slugs are stable, and are what you reference.** Create returns a slug like `engineering-context-a1b2`. Every later operation accepts either the ID or the slug.
+**Pick the server from the list, or pass one dynamically.** Every operation that acts on a server offers a **Server Name or ID** dropdown filled from your account, so there is no slug to copy. Switch the field to an expression when the server is decided at run time — the API accepts an ID or a slug, and both are returned by **Create** and **Get Many**.
+
+**Slugs are stable, and are what you reference.** Create returns a slug like `engineering-context-a1b2`, which never changes for the life of the server, so a stored reference keeps working.
 
 **Tool changes are immediate; content changes are not.** Adding a tool takes effect on the next agent request. Adding a source takes as long as indexing it takes.
 
@@ -216,7 +218,8 @@ It also returns `upgradeUrl`, and every limit response carries the same field, s
 | `400 Unknown tool name` | A tool name is not in the catalogue. The response lists the valid names |
 | `402 source_limit` | More sources than your tier allows. The message states the limit |
 | `403 enterprise_limit` | Server count cap reached. Delete one or upgrade |
-| `404 Server not found` | Wrong ID or slug, or the server belongs to another account |
+| `404 Server not found` | Wrong ID or slug, the server belongs to another account, or your key is scoped to specific servers and this is not one of them |
+| `403 key_scoped` | A **Server → Create** with a key limited to specific servers. Use an account-wide key to create servers |
 | `409 Source already exists` | That URL is already on the server |
 | `422 auth_required` | A private GitHub repo with no linked GitHub account (see below) |
 | `429 Too many requests` | Rate limited. Create is capped at 10 per hour |

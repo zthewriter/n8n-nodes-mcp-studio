@@ -1,5 +1,10 @@
 import { NodeConnectionTypes } from 'n8n-workflow';
-import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
+import type {
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
+	INodeType,
+	INodeTypeDescription,
+} from 'n8n-workflow';
 
 /**
  * Kept in step with the version in package.json. Sent on every request so MCP
@@ -31,7 +36,57 @@ const TOOL_OPTIONS = [
 	{ name: 'Summarize Content', value: 'summarize_content', description: 'Summarize a source URL' },
 ];
 
+/**
+ * Fills the server dropdowns from the account the credential belongs to, so a
+ * workflow is built by picking a server rather than by pasting a slug copied
+ * from the dashboard.
+ *
+ * It also makes a scoped API key legible: /api/mcp/list returns only the servers
+ * that key may act on, so the list a user sees here is exactly what the
+ * credential can reach. A key limited to one server offers one server, instead
+ * of offering everything and failing at run time.
+ */
+async function loadServerOptions(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const credentials = await this.getCredentials('mcpStudioApi');
+	const baseUrl = ((credentials.baseUrl as string) || 'https://appatools.com/mcp-studio').replace(
+		/\/+$/,
+		'',
+	);
+
+	const servers = (await this.helpers.httpRequestWithAuthentication.call(this, 'mcpStudioApi', {
+		method: 'GET',
+		url: `${baseUrl}/api/mcp/list`,
+		headers: {
+			'X-MCP-Studio-Partner': 'n8n',
+			'X-MCP-Studio-Partner-Version': NODE_VERSION,
+		},
+		json: true,
+	})) as Array<{ id?: string; name?: string; slug?: string; status?: string }>;
+
+	if (!Array.isArray(servers)) return [];
+
+	return servers
+		// A deleted server still answers for its restore window, but offering one
+		// in a picker invites a workflow built against something on its way out.
+		.filter((server) => server.status !== 'deleted' && server.slug)
+		.map((server) => ({
+			// The slug, not the id: it is immutable, it is what the MCP endpoint URL
+			// and every docs example use, and it keeps an exported workflow readable.
+			// The API accepts either.
+			value: server.slug as string,
+			name: server.name || (server.slug as string),
+			description: server.slug as string,
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
+}
+
 export class McpStudio implements INodeType {
+	methods = {
+		loadOptions: {
+			getServers: loadServerOptions,
+		},
+	};
+
 	description: INodeTypeDescription = {
 		displayName: 'AI Context by MCP Studio',
 		// Never change: this is the type identifier stored in saved workflows.
@@ -250,13 +305,13 @@ export class McpStudio implements INodeType {
 				],
 			},
 			{
-				displayName: 'Server ID or Slug',
+				displayName: 'Server Name or ID',
 				name: 'serverId',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'getServers' },
 				default: '',
 				required: true,
-				placeholder: 'engineering-context-a1b2',
-				description: 'The server ID or its slug. Both are returned by Create and Get Many.',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				displayOptions: {
 					show: { resource: ['server'], operation: ['get', 'delete', 'refresh'] },
 				},
@@ -324,12 +379,13 @@ export class McpStudio implements INodeType {
 				default: 'add',
 			},
 			{
-				displayName: 'Server ID or Slug',
+				displayName: 'Server Name or ID',
 				name: 'serverId',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'getServers' },
 				default: '',
 				required: true,
-				description: 'The server the source belongs to',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				displayOptions: { show: { resource: ['source'] } },
 			},
 			{
@@ -492,13 +548,13 @@ export class McpStudio implements INodeType {
 			// Shared by the two read-and-change resources, which both address a
 			// server the same way.
 			{
-				displayName: 'Server ID or Slug',
+				displayName: 'Server Name or ID',
 				name: 'serverId',
-				type: 'string',
+				type: 'options',
+				typeOptions: { loadOptionsMethod: 'getServers' },
 				default: '',
 				required: true,
-				placeholder: 'engineering-context-a1b2',
-				description: 'The server to read or change. The ID and the slug both work.',
+				description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				displayOptions: { show: { resource: ['analytics', 'tool'] } },
 			},
 
