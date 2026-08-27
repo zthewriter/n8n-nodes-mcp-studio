@@ -23,20 +23,22 @@ cd ~/n8n-nodes-mcp-studio
 npm install
 npm run build
 npm run lint
-npx eslint -c .eslintrc.prepublish.js nodes credentials package.json
 ```
 
-All four must succeed. The last command is the stricter ruleset n8n applies at publish time, and it is the one that catches the description-wording rules their reviewers check.
+All three must succeed. `npm run lint` runs the ruleset in `eslint.config.mjs`,
+which mirrors the one n8n's submission scanner applies, so a clean run here is
+the same result a reviewer gets. See "Before submitting to n8n" below for why
+that mirroring matters.
 
-Confirm `dist/` contains the compiled node, the credential, the icon, and the codex:
+Confirm `dist/` contains the compiled node, the credential, the icons, and the codex:
 
 ```bash
 find dist -type f
 ```
 
-Two files there are copied by gulp rather than emitted by tsc, and both fail
-silently if the copy step breaks. `appaTools.png` missing leaves the node
-loadable but drawn as a blank square. `McpStudio.node.json` missing leaves it
+The icons and the codex are copied by gulp rather than emitted by tsc, and both
+fail silently if the copy step breaks. A missing `appaTools.svg` leaves the node
+loadable but drawn as a blank square. A missing `McpStudio.node.json` leaves it
 working but with no documentation links in the node details panel.
 
 ## 2. Link the node into a local n8n
@@ -222,12 +224,32 @@ attestation depends on a short-lived OIDC token that only CI can obtain.
 
 n8n's [verification guidelines](https://docs.n8n.io/connect/create-nodes/build-your-node/reference/verification-guidelines/)
 are worth a final read. Requirements this package already satisfies: a
-declarative node, no runtime dependencies, a credential with a working test, a
-square icon, MIT license, one service per package, and a README documenting
-every operation.
+declarative node, no runtime dependencies, a credential with a working test and
+its own icon, themed SVG icons, MIT license, one service per package, and a
+README documenting every operation.
 
-The icon is a PNG rather than an SVG. n8n's own documentation is explicit that
-SVG is recommended and PNG is accepted, and n8n's built-in nodes ship dozens of
-PNG icons, so this is not a verification blocker. The legacy lint rule that
-errored on any non-SVG icon is disabled in `.eslintrc.js` with that reasoning
-recorded; n8n has since removed the same check from its current plugin.
+### Run the scanner, not just the linter
+
+The gate is `@n8n/scan-community-package`, and it only reads packages already on
+npm:
+
+```bash
+npx @n8n/scan-community-package n8n-nodes-mcp-studio
+```
+
+It checks the provenance attestation, fetches the attested source from GitHub,
+and lints both that source and the published tarball. Any ESLint **error** fails
+the scan; warnings do not.
+
+Because it can only read a published version, a mistake is not discoverable
+until after a release. That is exactly how 0.2.1 shipped with six scanner errors
+while `npm run lint` was green: the old config registered only
+`eslint-plugin-n8n-nodes-base`, so every `@n8n/eslint-plugin-community-nodes`
+rule was invisible locally — a missing credential icon, a missing
+`usableAsTool`, and `'main'` string literals instead of `NodeConnectionTypes`.
+
+`eslint.config.mjs` now reproduces the scanner's config, so those rules run on
+every commit. If the scanner's own config changes upstream, re-read
+`buildScanConfig` in that package and update ours to match. Never switch a rule
+off locally to go green — the scanner does not read our config, so it converts an
+error you could have fixed in a minute into a rejection that costs days.

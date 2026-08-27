@@ -28,19 +28,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Runs the same ruleset as n8n's submission scanner; see eslint.config.mjs.
+      # A finding here is a finding that would otherwise only surface after a
+      # release, because the scanner can only read published packages.
       - name: Lint
         run: npm run lint
-
-      # The publish ruleset is stricter than the everyday one, so running it here
-      # means a release cannot fail on a rule that was already broken on main.
-      - name: Lint against the publish ruleset
-        run: npx eslint -c .eslintrc.prepublish.js nodes credentials package.json
-
-      # n8n's own checker, which is what a verification reviewer runs. Failing it
-      # here is cheaper than failing it in their review queue, where a rejection
-      # costs days rather than a re-push.
-      - name: Lint against n8n's verification checks
-        run: npm run lint:n8n
 
       - name: Confirm the package contents
         run: npm pack --dry-run

@@ -1,5 +1,6 @@
 import type {
 	IAuthenticateGeneric,
+	Icon,
 	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
@@ -11,6 +12,10 @@ export class McpStudioApi implements ICredentialType {
 
 	// Matches the node name, with the 'API' suffix n8n's credential lint requires.
 	displayName = 'AI Context by MCP Studio API';
+
+	// Same mark as the node, so the credential is recognisable in the picker,
+	// where n8n lists it away from the node that uses it.
+	icon: Icon = { light: 'file:appaTools.svg', dark: 'file:appaTools.dark.svg' };
 
 	documentationUrl = 'https://docs.appatools.com/mcp-studio/integrations/n8n';
 
