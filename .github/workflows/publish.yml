@@ -39,11 +39,9 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Lint against the publish ruleset
-        run: npx eslint -c .eslintrc.prepublish.js nodes credentials package.json
-
-      - name: Lint against n8n's verification checks
-        run: npm run lint:n8n
+      # The same ruleset n8n's submission scanner applies; see eslint.config.mjs.
+      - name: Lint
+        run: npm run lint
 
       # Catches the mismatch that silently publishes the wrong version: a tag of
       # 0.2.0 against a package.json still saying 0.1.0.

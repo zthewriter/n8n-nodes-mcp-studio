@@ -1,3 +1,4 @@
+import { NodeConnectionTypes } from 'n8n-workflow';
 import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
 
 /**
@@ -5,7 +6,7 @@ import type { INodeType, INodeTypeDescription } from 'n8n-workflow';
  * Studio can attribute activation and conversion to a specific node release,
  * which is what makes a regression in one version visible.
  */
-const NODE_VERSION = '0.2.0';
+const NODE_VERSION = '0.2.2';
 
 const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Auto-Detect', value: '' },
@@ -35,17 +36,20 @@ export class McpStudio implements INodeType {
 		displayName: 'AI Context by MCP Studio',
 		// Never change: this is the type identifier stored in saved workflows.
 		name: 'mcpStudio',
-		icon: 'file:appaTools.png',
+		icon: { light: 'file:appaTools.svg', dark: 'file:appaTools.dark.svg' },
 		group: ['transform'],
 		version: 1,
+		// Lets an AI Agent call this node as a tool, so an agent can add a source
+		// or read metrics mid-run rather than only on a fixed trigger path.
+		usableAsTool: true,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
 			'Give AI agents persistent context from your docs, code, PDFs, and internal tools through a live MCP server',
 		defaults: {
 			name: 'AI Context',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		credentials: [
 			{
 				name: 'mcpStudioApi',
