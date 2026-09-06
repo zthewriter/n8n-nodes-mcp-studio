@@ -17,6 +17,12 @@
 		"Agent Memory"
 	],
 	"resources": {
+		"generic": [
+			{
+				"label": "Terms of Service",
+				"url": "https://appatools.com/mcp-studio/terms/n8n-node"
+			}
+		],
 		"credentialDocumentation": [
 			{
 				"url": "https://docs.appatools.com/mcp-studio/integrations/n8n"

@@ -94,8 +94,9 @@ An MCP Studio account is required before the node can do anything. This is by de
 1. Create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration).
 2. Open [**Account → API Keys**](https://appatools.com/mcp-studio/account/api-keys) and create a key. Set **Used from** to **n8n**. Under **Can reach**, keep the key account-wide, or limit it to specific servers so a workflow that only reads one server cannot touch the rest of your account.
 3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — MCP Studio stores only a hash of it, so a lost key can be replaced but never recovered.
-4. In n8n, create an **AI Context by MCP Studio API** credential and paste the key. Leave **Base URL** at its default unless you are testing against a local instance.
-5. Click **Test**. Success returns your current plan and usage.
+4. In n8n, create an **AI Context by MCP Studio API** credential. Under **Terms of Service**, select **I have read and accept the Terms of Service**. n8n will not save the credential until you do, so read [the node terms](https://appatools.com/mcp-studio/terms/n8n-node) first.
+5. Paste the key into **API Key**. Leave **Base URL** at its default unless you are testing against a local instance.
+6. Click **Test**. Success returns your current plan and usage.
 
 A key acts on your account with your plan's limits. Treat it like a password, and revoke it from the same screen if it leaks.
 
@@ -245,6 +246,18 @@ requirement for contributors, not for running it.
 ## Privacy
 
 Source content is fetched by MCP Studio and stored as text chunks and embeddings so it can be searched. Only public URLs and repositories you have explicitly linked are crawled. Deleting a source removes its indexed content. Requests from this node carry the node version and an `n8n` partner tag for support and attribution; no workflow data is sent beyond the parameters of the operation you run.
+
+## Terms of Service
+
+Using this node means accepting the [node Terms of Service](https://appatools.com/mcp-studio/terms/n8n-node), which is why the credential form will not save until you select the acceptance. The node terms add to the [MCP Studio Terms of Service](https://appatools.com/mcp-studio/terms) that already cover the account, rather than replacing them. Read both; what follows is a summary and not a substitute.
+
+The three points that matter most in practice:
+
+- **An MCP Studio account is required, and the node carries no allowance of its own.** Your plan on that account sets how many servers you can create, how many sources each can have, and how many MCP requests you get each month. Requests made through the node count against that account exactly as if you had made them from the web app, so a scheduled workflow consumes quota on its schedule and an automation loop can exhaust it quickly.
+- **The API key lives on your n8n instance, under n8n's encryption and access controls, not ours.** On a shared instance, anyone who can build or edit a workflow can generally use a saved credential even if they cannot read the key itself. If that is not the set of people you would hand account access to, give the instance a dedicated MCP Studio account instead of your own. Revoking a key from **Account → API Keys** takes effect immediately.
+- **We are not affiliated with n8n.** n8n is published by a third party, "n8n" is their trademark, and it is used here only to identify the software this node runs inside. Their terms govern your use of n8n, and community nodes are installed at your own risk under those terms. Support for this node comes from us; support for n8n does not.
+
+The terms also cover the MIT licence on the code, acceptable use, what the node sends us, using it as an AI Agent tool, and the limits of what we warrant. Each version carries a version identifier, and a change of substance is noted in the package release notes.
 
 ## Local development
 

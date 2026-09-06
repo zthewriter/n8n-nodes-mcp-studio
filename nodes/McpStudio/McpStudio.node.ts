@@ -11,7 +11,7 @@ import type {
  * Studio can attribute activation and conversion to a specific node release,
  * which is what makes a regression in one version visible.
  */
-const NODE_VERSION = '0.2.2';
+const NODE_VERSION = '0.3.0';
 
 const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Auto-Detect', value: '' },
@@ -122,7 +122,7 @@ export class McpStudio implements INodeType {
 		properties: [
 			{
 				displayName:
-					'This node needs a free MCP Studio account. Create one at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then add an API key credential above.',
+					'This node needs a free MCP Studio account. Create one at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then add an API key credential above and accept the <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>.',
 				name: 'setupNotice',
 				type: 'notice',
 				default: '',
