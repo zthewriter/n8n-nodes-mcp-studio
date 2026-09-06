@@ -28,6 +28,33 @@ export class McpStudioApi implements ICredentialType {
 			default: '',
 		},
 		{
+			displayName:
+				'Using this node requires accepting its <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>. It also requires an MCP Studio account, which is governed by the <a href="https://appatools.com/mcp-studio/terms" target="_blank">MCP Studio Terms of Service</a>.',
+			name: 'termsNotice',
+			type: 'notice',
+			default: '',
+		},
+		// An options field with an empty default, not a boolean, because n8n's
+		// `required` check only rejects an empty value: an unchecked boolean is
+		// `false`, which counts as filled, so the credential would save with the
+		// terms unaccepted and the gate would exist only visually. An empty string
+		// fails the check, so the user has to select the acceptance to get past it.
+		{
+			displayName: 'Terms of Service',
+			name: 'termsAccepted',
+			type: 'options',
+			options: [
+				{
+					name: 'I have read and accept the Terms of Service',
+					value: 'accepted',
+				},
+			],
+			default: '',
+			required: true,
+			description:
+				'Acceptance of the node Terms of Service, version 2026-09-05. This credential cannot be saved until it is selected.',
+		},
+		{
 			displayName: 'API Key',
 			name: 'apiKey',
 			type: 'string',
