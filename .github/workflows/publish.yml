@@ -3,9 +3,12 @@ name: Publish to npm
 # Publishing runs here rather than from a laptop because n8n has required an npm
 # provenance attestation for verified community nodes since 1 May 2026, and
 # provenance can only be minted by a CI job holding a short-lived OIDC token.
+# `scripts/assert-ci-publish.mjs` refuses a publish started anywhere else, since
+# 0.3.0 went out from a laptop and reached npm before this workflow could run.
 #
-# Release by pushing a tag that matches the version in package.json:
-#   npm version patch && git push --follow-tags
+# Release by bumping the version in a pull request, merging it, then tagging the
+# merged commit:
+#   npm run release
 on:
   push:
     tags:
@@ -54,6 +57,9 @@ jobs:
             echo "Tag $TAG does not match package.json version $PKG"
             exit 1
           fi
+
+      - name: Verify NODE_VERSION matches package.json
+        run: npm run check:version
 
       - name: Publish
         run: npm publish --provenance --access public

@@ -11,7 +11,7 @@ import type {
  * Studio can attribute activation and conversion to a specific node release,
  * which is what makes a regression in one version visible.
  */
-const NODE_VERSION = '0.3.0';
+const NODE_VERSION = '0.3.1';
 
 const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Auto-Detect', value: '' },

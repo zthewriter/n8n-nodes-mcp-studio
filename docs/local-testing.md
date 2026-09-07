@@ -197,16 +197,17 @@ it, and someone who installed from npm has no repository to find it in.
 
 Once every stage above passes:
 
-1. Update `NODE_VERSION` in `nodes/McpStudio/McpStudio.node.ts` to match the
-   version you are about to release. It is read separately from `package.json`,
-   so a mismatch surfaces as misattributed analytics rather than a build error.
+1. In a pull request, bump `version` in `package.json` and `NODE_VERSION` in
+   `nodes/McpStudio/McpStudio.node.ts` together. `NODE_VERSION` is read
+   separately from `package.json`, so a mismatch surfaces as misattributed
+   analytics rather than a build error; `npm run check:version` catches it, and
+   CI runs that check on every pull request.
 2. Add an `NPM_TOKEN` repository secret with publish rights, or configure npm
    Trusted Publishing for the repository.
-3. Tag the release. Publishing runs in CI, not locally:
+3. Merge, then tag the merged commit. Publishing runs in CI, not locally:
 
    ```bash
-   npm version patch
-   git push --follow-tags
+   npm run release
    ```
 
    `.github/workflows/publish.yml` builds, runs the strict lint, refuses to
@@ -221,6 +222,14 @@ Once every stage above passes:
 Publishing from a laptop will not do. Since 1 May 2026 n8n only verifies nodes
 published by a CI workflow carrying an npm provenance statement, because the
 attestation depends on a short-lived OIDC token that only CI can obtain.
+
+Nothing about a laptop publish looks wrong at the time, which is the problem:
+0.3.0 went to npm from a laptop thirteen seconds before its tag reached CI, the
+workflow died on `cannot publish over the previously published versions`, and the
+release sat on npm looking healthy until n8n rejected it in review. npm will not
+let a version be replaced, so the only remedy was spending a version number.
+`prepublishOnly` now runs `scripts/assert-ci-publish.mjs`, which refuses any
+publish outside GitHub Actions.
 
 n8n's [verification guidelines](https://docs.n8n.io/connect/create-nodes/build-your-node/reference/verification-guidelines/)
 are worth a final read. Requirements this package already satisfies: a
