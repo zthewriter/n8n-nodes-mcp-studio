@@ -34,5 +34,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      # NODE_VERSION is sent as a request header and read separately from
+      # package.json, so a stale value misattributes a release's analytics
+      # instead of breaking the build. Checked here so the pull request that
+      # bumps the version is where the mismatch surfaces.
+      - name: Confirm NODE_VERSION matches package.json
+        run: npm run check:version
+
       - name: Confirm the package contents
         run: npm pack --dry-run

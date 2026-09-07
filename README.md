@@ -287,10 +287,13 @@ npx n8n start
 Releases publish from GitHub Actions, not from a laptop. n8n has required an npm
 provenance attestation for verified community nodes since 1 May 2026, and that
 attestation can only be minted by a CI job holding a short-lived OIDC token.
+`npm publish` run anywhere else is refused by `scripts/assert-ci-publish.mjs`.
+
+Bump `version` in `package.json` and `NODE_VERSION` in the node source in a pull
+request, merge it, then tag the merged commit:
 
 ```bash
-npm version patch
-git push --follow-tags
+npm run release
 ```
 
 The tag triggers `.github/workflows/publish.yml`, which builds, lints against the
