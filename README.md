@@ -109,7 +109,7 @@ It does the whole loop end to end: reads your plan, branches if you are already 
 Building it yourself is four steps:
 
 1. **Account → Get Usage** — confirm there is room for another server.
-2. **Server → Create** — give it a name, one or more sources, and 3 to 10 tools. Returns `serverId`, `slug`, `url`, `sseUrl`, and `configSnippet`.
+2. **Server → Create** — give it a name, one or more sources, and 3 to 10 tools. Returns `serverId`, `slug`, `url`, and `configSnippet`.
 3. **Wait**, then **Server → Get** — poll until every source reports `crawlStatus: "complete"`.
 4. Use the `url` — paste `configSnippet` into Cursor or Claude Desktop, or point an n8n MCP Client tool at `url` so an AI Agent can query it.
 
