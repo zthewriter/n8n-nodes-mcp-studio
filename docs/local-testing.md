@@ -92,7 +92,7 @@ Check each stage:
 
 1. **Check plan and limits** returns your plan, `mcpCallsUsed`, `mcpCallsLimit`, `serversUsed`, and `serversLimit`.
 2. **Room for another server?** takes the true branch. If it takes the false branch you are already at your server limit — delete one in the dashboard and re-run.
-3. **Create MCP server** returns `serverId`, `slug`, `url`, `sseUrl`, and `configSnippet`.
+3. **Create MCP server** returns `serverId`, `slug`, `url`, and `configSnippet`.
 4. **Get endpoint and progress** returns the same server with a `sources` array whose entries carry `crawlStatus` and an `indexing` object.
 
 If `crawlStatus` is still `crawling`, that is correct rather than broken. Indexing is asynchronous, and the 45-second wait in the template is deliberately short. Re-run just that node until every source reads `complete`.
