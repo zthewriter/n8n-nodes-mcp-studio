@@ -1,6 +1,6 @@
 # n8n-nodes-mcp-studio
 
-**AI Context by MCP Studio** — an n8n community node that gives AI agents persistent context. Point it at your documentation, code repositories, PDFs, written specs, runbooks, or another MCP server, and it returns a live [Model Context Protocol](https://modelcontextprotocol.io) endpoint that agents consult before they act. No code, no vector database, no server to run.
+**AI Context by Raglantern** — an n8n community node that gives AI agents persistent context. Point it at your documentation, code repositories, PDFs, written specs, runbooks, or another MCP server, and it returns a live [Model Context Protocol](https://modelcontextprotocol.io) endpoint that agents consult before they act. No code, no vector database, no server to run.
 
 [What this is](#what-this-is) · [What you can connect](#what-you-can-connect) · [What this looks like in n8n](#what-this-looks-like-in-n8n) · [Who it's for](#who-its-for) · [Installation](#installation) · [Account setup](#account-setup) · [Your first workflow](#your-first-workflow) · [Operations](#operations) · [What to expect](#what-to-expect) · [Limits and cost](#limits-and-cost) · [Troubleshooting](#troubleshooting) · [Local development](#local-development)
 
@@ -12,7 +12,7 @@ Persistent context is the fix. Rather than pasting facts into prompts and hoping
 
 The hard part is the endpoint. Building one means crawling your content, chunking it so headings and code blocks survive intact, generating embeddings, storing the vectors, writing a retrieval layer that ranks well enough to be trusted, wrapping the result in the MCP protocol, and hosting it. That is weeks of engineering. It also does not end at launch: content changes, so something has to re-crawl it, re-embed what moved, skip what did not, and recover from runs that fail halfway — for as long as the server exists.
 
-MCP Studio does the building and the maintaining, with no code. You give it URLs and get a hosted MCP endpoint in under a minute, queryable straight away while indexing fills in behind it. After that, sources re-index daily on their own, unchanged content is detected and skipped, and a run that fails leaves the previous index fully searchable.
+Raglantern does the building and the maintaining, with no code. You give it URLs and get a hosted MCP endpoint in under a minute, queryable straight away while indexing fills in behind it. After that, sources re-index daily on their own, unchanged content is detected and skipped, and a run that fails leaves the previous index fully searchable.
 
 This node moves those decisions into n8n. A workflow can create a server, add and remove sources, change which tools it exposes, force a re-index the moment content ships, read back the endpoint URL, and pull the server's own usage metrics — so context gets provisioned and maintained on a trigger instead of in a browser tab.
 
@@ -66,7 +66,7 @@ A common pairing: this node creates the server and returns its URL, and an MCP C
 - **Developer-experience and docs teams.** Ship an MCP endpoint alongside your documentation and re-index it from CI.
 - **Automation builders and consultants.** Provision context servers per client or per project as a repeatable step.
 
-You do not need to know anything about embeddings, vector search, or the MCP specification. You do need an MCP Studio account.
+You do not need to know anything about embeddings, vector search, or the MCP specification. You do need a Raglantern account.
 
 ## Installation
 
@@ -83,18 +83,18 @@ cd ~/.n8n
 npm install n8n-nodes-mcp-studio
 ```
 
-Restart n8n afterwards. The node appears as **AI Context by MCP Studio**.
+Restart n8n afterwards. The node appears as **AI Context by Raglantern**.
 
 > Community nodes are available on self-hosted n8n and, for verified nodes, on n8n Cloud.
 
 ## Account setup
 
-An MCP Studio account is required before the node can do anything. This is by design: the servers it creates are hosted, billed, and scoped to your account.
+A Raglantern account is required before the node can do anything. This is by design: the servers it creates are hosted, billed, and scoped to your account.
 
 1. Create a free account at [appatools.com/mcp-studio](https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration).
 2. Open [**Account → API Keys**](https://appatools.com/mcp-studio/account/api-keys) and create a key. Set **Used from** to **n8n**. Under **Can reach**, keep the key account-wide, or limit it to specific servers so a workflow that only reads one server cannot touch the rest of your account.
-3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — MCP Studio stores only a hash of it, so a lost key can be replaced but never recovered.
-4. In n8n, create an **AI Context by MCP Studio API** credential. Under **Terms of Service**, select **I have read and accept the Terms of Service**. n8n will not save the credential until you do, so read [the node terms](https://appatools.com/mcp-studio/terms/n8n-node) first.
+3. Copy the key immediately. It starts with `msk_live_` and is shown exactly once — Raglantern stores only a hash of it, so a lost key can be replaced but never recovered.
+4. In n8n, create an **AI Context by Raglantern API** credential. Under **Terms of Service**, select **I have read and accept the Terms of Service**. n8n will not save the credential until you do, so read [the node terms](https://appatools.com/mcp-studio/terms/n8n-node) first.
 5. Paste the key into **API Key**. Leave **Base URL** at its default unless you are testing against a local instance.
 6. Click **Test**. Success returns your current plan and usage.
 
@@ -113,7 +113,7 @@ Building it yourself is four steps:
 3. **Wait**, then **Server → Get** — poll until every source reports `crawlStatus: "complete"`.
 4. Use the `url` — paste `configSnippet` into Cursor or Claude Desktop, or point an n8n MCP Client tool at `url` so an AI Agent can query it.
 
-From there, the shape worth building is event-driven rather than scheduled. MCP Studio already re-indexes stale sources once a day on its own, so a nightly Schedule Trigger into **Refresh** mostly duplicates that. The gain is reacting to the event itself: a **Webhook** on your docs deploy, or a GitHub release trigger, into **Server → Refresh** — so context is current minutes after a change instead of by the next morning.
+From there, the shape worth building is event-driven rather than scheduled. Raglantern already re-indexes stale sources once a day on its own, so a nightly Schedule Trigger into **Refresh** mostly duplicates that. The gain is reacting to the event itself: a **Webhook** on your docs deploy, or a GitHub release trigger, into **Server → Refresh** — so context is current minutes after a change instead of by the next morning.
 
 ## Operations
 
@@ -171,7 +171,7 @@ This reads the metrics included on every plan, and it returns the same fields at
 | `clientUsage` | Which clients are connecting — Cursor, Claude Desktop, an n8n agent, and so on |
 | `callsOverTime` | Daily volume and errors for the last 30 days |
 
-Per-request detail — the exact passage returned for a given question, content gaps, source grades, and forecasts — is part of MCP Studio's paid analytics and is read on the dashboard, not through this node.
+Per-request detail — the exact passage returned for a given question, content gaps, source grades, and forecasts — is part of Raglantern's paid analytics and is read on the dashboard, not through this node.
 
 ### Account
 
@@ -231,7 +231,7 @@ Turn on **Settings → Always Output Data** on a node to inspect the full error 
 
 ### Private GitHub repositories
 
-A private repository needs a linked GitHub account, and that link is a browser OAuth step that cannot happen over an API. Link it once in the MCP Studio dashboard, then add the source. Without the link you get a `422` with `auth_required`, because there is no token to read the repository with.
+A private repository needs a linked GitHub account, and that link is a browser OAuth step that cannot happen over an API. Link it once in the Raglantern dashboard, then add the source. Without the link you get a `422` with `auth_required`, because there is no token to read the repository with.
 
 ## Compatibility
 
@@ -245,16 +245,16 @@ requirement for contributors, not for running it.
 
 ## Privacy
 
-Source content is fetched by MCP Studio and stored as text chunks and embeddings so it can be searched. Only public URLs and repositories you have explicitly linked are crawled. Deleting a source removes its indexed content. Requests from this node carry the node version and an `n8n` partner tag for support and attribution; no workflow data is sent beyond the parameters of the operation you run.
+Source content is fetched by Raglantern and stored as text chunks and embeddings so it can be searched. Only public URLs and repositories you have explicitly linked are crawled. Deleting a source removes its indexed content. Requests from this node carry the node version and an `n8n` partner tag for support and attribution; no workflow data is sent beyond the parameters of the operation you run.
 
 ## Terms of Service
 
-Using this node means accepting the [node Terms of Service](https://appatools.com/mcp-studio/terms/n8n-node), which is why the credential form will not save until you select the acceptance. The node terms add to the [MCP Studio Terms of Service](https://appatools.com/mcp-studio/terms) that already cover the account, rather than replacing them. Read both; what follows is a summary and not a substitute.
+Using this node means accepting the [node Terms of Service](https://appatools.com/mcp-studio/terms/n8n-node), which is why the credential form will not save until you select the acceptance. The node terms add to the [Raglantern Terms of Service](https://appatools.com/mcp-studio/terms) that already cover the account, rather than replacing them. Read both; what follows is a summary and not a substitute.
 
 The three points that matter most in practice:
 
-- **An MCP Studio account is required, and the node carries no allowance of its own.** Your plan on that account sets how many servers you can create, how many sources each can have, and how many MCP requests you get each month. Requests made through the node count against that account exactly as if you had made them from the web app, so a scheduled workflow consumes quota on its schedule and an automation loop can exhaust it quickly.
-- **The API key lives on your n8n instance, under n8n's encryption and access controls, not ours.** On a shared instance, anyone who can build or edit a workflow can generally use a saved credential even if they cannot read the key itself. If that is not the set of people you would hand account access to, give the instance a dedicated MCP Studio account instead of your own. Revoking a key from **Account → API Keys** takes effect immediately.
+- **A Raglantern account is required, and the node carries no allowance of its own.** Your plan on that account sets how many servers you can create, how many sources each can have, and how many MCP requests you get each month. Requests made through the node count against that account exactly as if you had made them from the web app, so a scheduled workflow consumes quota on its schedule and an automation loop can exhaust it quickly.
+- **The API key lives on your n8n instance, under n8n's encryption and access controls, not ours.** On a shared instance, anyone who can build or edit a workflow can generally use a saved credential even if they cannot read the key itself. If that is not the set of people you would hand account access to, give the instance a dedicated Raglantern account instead of your own. Revoking a key from **Account → API Keys** takes effect immediately.
 - **We are not affiliated with n8n.** n8n is published by a third party, "n8n" is their trademark, and it is used here only to identify the software this node runs inside. Their terms govern your use of n8n, and community nodes are installed at your own risk under those terms. Support for this node comes from us; support for n8n does not.
 
 The terms also cover the MIT licence on the code, acceptable use, what the node sends us, using it as an AI Agent tool, and the limits of what we warrant. Each version carries a version identifier, and a change of substance is noted in the package release notes.
@@ -280,7 +280,7 @@ npm link n8n-nodes-mcp-studio
 npx n8n start
 ```
 
-[`docs/local-testing.md`](docs/local-testing.md) is the full end-to-end verification, including pointing the credential at a local MCP Studio instance and confirming the finished endpoint answers a real MCP call.
+[`docs/local-testing.md`](docs/local-testing.md) is the full end-to-end verification, including pointing the credential at a local Raglantern instance and confirming the finished endpoint answers a real MCP call.
 
 ### Releasing
 
@@ -303,9 +303,9 @@ rights, or npm Trusted Publishing configured for this repository.
 
 ## Resources
 
-- [MCP Studio](https://appatools.com/mcp-studio)
-- [MCP Studio documentation](https://docs.appatools.com/mcp-studio)
-- [Using MCP Studio with n8n](https://docs.appatools.com/mcp-studio/integrations/n8n)
+- [Raglantern](https://appatools.com/mcp-studio)
+- [Raglantern documentation](https://docs.appatools.com/mcp-studio)
+- [Using Raglantern with n8n](https://docs.appatools.com/mcp-studio/integrations/n8n)
 - [n8n community nodes](https://docs.n8n.io/integrations/#community-nodes)
 - [Model Context Protocol](https://modelcontextprotocol.io)
 
