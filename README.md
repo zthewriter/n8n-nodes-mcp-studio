@@ -1,5 +1,7 @@
 # n8n-nodes-mcp-studio
 
+> Raglantern was formerly named MCP Studio. Only the name changed; this package, your credentials, and your workflows keep working as they are.
+
 **AI Context by Raglantern** — an n8n community node that gives AI agents persistent context. Point it at your documentation, code repositories, PDFs, written specs, runbooks, or another MCP server, and it returns a live [Model Context Protocol](https://modelcontextprotocol.io) endpoint that agents consult before they act. No code, no vector database, no server to run.
 
 [What this is](#what-this-is) · [What you can connect](#what-you-can-connect) · [What this looks like in n8n](#what-this-looks-like-in-n8n) · [Who it's for](#who-its-for) · [Installation](#installation) · [Account setup](#account-setup) · [Your first workflow](#your-first-workflow) · [Operations](#operations) · [What to expect](#what-to-expect) · [Limits and cost](#limits-and-cost) · [Troubleshooting](#troubleshooting) · [Local development](#local-development)
