@@ -6,8 +6,8 @@ The order matters: each stage depends on the one before it, and stopping at the 
 
 ## Prerequisites
 
-- An MCP Studio account
-- Either the production MCP Studio at `https://appatools.com/mcp-studio`, or a local instance
+- A Raglantern account
+- Either the production Raglantern at `https://appatools.com/mcp-studio`, or a local instance
 - Node.js 24 or later to *run* n8n. Current n8n requires it, and it fails to start on Node 20 with a version error rather than anything descriptive:
 
   ```bash
@@ -56,17 +56,17 @@ npm link n8n-nodes-mcp-studio
 npx n8n start
 ```
 
-Open http://localhost:5678. Add a node and search for "AI Context" or "MCP". It appears as **AI Context by MCP Studio** with the Appa Tools axolotl as its icon. If it does not appear, the link did not take — check that `~/.n8n/nodes/node_modules/n8n-nodes-mcp-studio` exists and points at your build, and that you linked under the same Node version you started n8n with.
+Open http://localhost:5678. Add a node and search for "AI Context" or "MCP". It appears as **AI Context by Raglantern** with the Appa Tools axolotl as its icon. If it does not appear, the link did not take — check that `~/.n8n/nodes/node_modules/n8n-nodes-mcp-studio` exists and points at your build, and that you linked under the same Node version you started n8n with.
 
 After any code change, run `npm run build` and restart n8n. The editor caches node descriptions, so a hard refresh of the browser helps too.
 
 ## 3. Create an API key
 
-In MCP Studio, go to **Account → API Keys**, set the label to `n8n local test`, set **Used from** to **n8n**, and create it. Copy the key immediately — it is displayed once.
+In Raglantern, go to **Account → API Keys**, set the label to `n8n local test`, set **Used from** to **n8n**, and create it. Copy the key immediately — it is displayed once.
 
 ## 4. Verify the credential
 
-In n8n, create an **AI Context by MCP Studio API** credential:
+In n8n, create an **AI Context by Raglantern API** credential:
 
 - **API Key**: the `msk_live_…` value you just copied
 - **Base URL**: `https://appatools.com/mcp-studio`
@@ -75,7 +75,7 @@ Click **Test**. Expect a green result.
 
 If it fails, the useful distinction is which failure you get. A `401` means the key is wrong, revoked, or truncated on paste. Anything else, including a hang, usually means the Base URL is wrong — a common mistake is dropping the `/mcp-studio` path.
 
-### Pointing at a local MCP Studio instance
+### Pointing at a local Raglantern instance
 
 ```bash
 cd ~/mcp-builder-studio
@@ -86,7 +86,7 @@ Then set **Base URL** to `http://localhost:3000/mcp-studio`. Everything else is 
 
 ## 5. Walk the happy path
 
-Import `workflows/mcp-studio-fast-start.json` through **Workflows → Import from File** and select your credential on each MCP Studio node. Then run it.
+Import `workflows/mcp-studio-fast-start.json` through **Workflows → Import from File** and select your credential on each Raglantern node. Then run it.
 
 Check each stage:
 
@@ -152,7 +152,7 @@ These matter more than the happy path for review, because they are what a user a
 
 | Trigger | Expected |
 |---|---|
-| Revoke the key in MCP Studio, re-run any node | `401 Authentication required` |
+| Revoke the key in Raglantern, re-run any node | `401 Authentication required` |
 | Create with 2 tools selected | `400 Select between 3 and 10 tools` |
 | Tool → Remove enough tools to leave 2 | `400 An MCP server needs at least 3 tools`, and the selection is unchanged |
 | Tool → Get Many for another account's server | `404 Server not found`, never a tool list |
@@ -165,7 +165,7 @@ Turn on **Settings → Always Output Data** on a node to inspect the error body 
 
 ## 9. Confirm attribution landed
 
-Every request carries `X-MCP-Studio-Partner: n8n` and the node version. In MCP Studio, a server created through this node stores `partnerName` and `partnerVersion`, and PostHog receives `partner_name` on `mcp_server_created`.
+Every request carries `X-MCP-Studio-Partner: n8n` and the node version. In Raglantern, a server created through this node stores `partnerName` and `partnerVersion`, and PostHog receives `partner_name` on `mcp_server_created`.
 
 Verify with a direct database read against the instance you tested:
 

@@ -11,7 +11,7 @@ export class McpStudioApi implements ICredentialType {
 	name = 'mcpStudioApi';
 
 	// Matches the node name, with the 'API' suffix n8n's credential lint requires.
-	displayName = 'AI Context by MCP Studio API';
+	displayName = 'AI Context by Raglantern API';
 
 	// Same mark as the node, so the credential is recognisable in the picker,
 	// where n8n lists it away from the node that uses it.
@@ -22,14 +22,14 @@ export class McpStudioApi implements ICredentialType {
 	properties: INodeProperties[] = [
 		{
 			displayName:
-				'An MCP Studio account is required before this node can do anything. Sign up free at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then create a key under Account &rarr; API Keys. The free tier includes 3 servers, 2 sources per server, and 50 MCP requests per month.',
+				'A Raglantern account is required before this node can do anything. Sign up free at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then create a key under Account &rarr; API Keys. The free tier includes 3 servers, 2 sources per server, and 50 MCP requests per month.',
 			name: 'accountNotice',
 			type: 'notice',
 			default: '',
 		},
 		{
 			displayName:
-				'Using this node requires accepting its <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>. It also requires an MCP Studio account, which is governed by the <a href="https://appatools.com/mcp-studio/terms" target="_blank">MCP Studio Terms of Service</a>.',
+				'Using this node requires accepting its <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>. It also requires a Raglantern account, which is governed by the <a href="https://appatools.com/mcp-studio/terms" target="_blank">Raglantern Terms of Service</a>.',
 			name: 'termsNotice',
 			type: 'notice',
 			default: '',
@@ -62,7 +62,7 @@ export class McpStudioApi implements ICredentialType {
 			default: '',
 			required: true,
 			description:
-				'Key generated under Account &rarr; API Keys in MCP Studio. Begins with msk_live_ and is shown only once.',
+				'Key generated under Account &rarr; API Keys in Raglantern. Begins with msk_live_ and is shown only once.',
 		},
 		{
 			displayName: 'Base URL',
@@ -70,7 +70,7 @@ export class McpStudioApi implements ICredentialType {
 			type: 'string',
 			default: 'https://appatools.com/mcp-studio',
 			description:
-				'Root URL of the MCP Studio instance. Change this only to test against a local instance, for example http://localhost:3000/mcp-studio.',
+				'Root URL of the Raglantern instance. Change this only to test against a local instance, for example http://localhost:3000/mcp-studio.',
 		},
 	];
 
