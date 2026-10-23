@@ -53,7 +53,8 @@ Installing an unverified package from the UI needs
 ### 2. Point workflows 2 and 3 at a server that has finished indexing
 
 Indexing is asynchronous and a real corpus takes longer than the whole video, so
-nothing in the recording waits for it. Any server you already built in the Raglantern UI works here — the API cannot tell how a server was created, so
+nothing in the recording waits for it. Any server you already built in the MCP
+Studio UI works here — the API cannot tell how a server was created, so
 UI-created and node-created servers are interchangeable.
 
 Workflows 2 and 3 are already pointed at `metabase-docs-mcp-16m0qv`, which is
@@ -65,7 +66,7 @@ Make a handful of MCP requests against it beforehand so the metrics in workflow 
 show real numbers rather than zeros. Rehearsing workflow 2 a few times is enough.
 
 Whatever server you use, the questions have to suit its corpus. A Metabase docs
-server asked about Raglantern returns nothing, and an empty result on camera reads
+server asked about MCP Studio returns nothing, and an empty result on camera reads
 as a broken node rather than a well-aimed query.
 
 **Only three things need indexed content:** the JSON-RPC call and Analytics in
@@ -107,10 +108,10 @@ it was published from GitHub Actions with an npm provenance attestation.
 
 **0:50 – 1:40 · Insert the node and test the credential**
 
-New workflow → add node → search "AI Context" → **AI Context by Raglantern**.
+New workflow → add node → search "AI Context" → **AI Context by MCP Studio**.
 Note the node offers Server, Source, Tool, Analytics and Account.
 
-Create a new credential. Paste an API key from Raglantern (Account → API Keys,
+Create a new credential. Paste an API key from MCP Studio (Account → API Keys,
 with **Used from** set to n8n). Leave Base URL at `https://appatools.com/mcp-studio`.
 Click **Test** and show it succeed — it calls the account usage endpoint, so it
 proves the key without changing anything.

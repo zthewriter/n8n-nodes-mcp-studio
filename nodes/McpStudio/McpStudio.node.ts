@@ -7,11 +7,11 @@ import type {
 } from 'n8n-workflow';
 
 /**
- * Kept in step with the version in package.json. Sent on every request so
- * Raglantern can attribute activation and conversion to a specific node release,
+ * Kept in step with the version in package.json. Sent on every request so MCP
+ * Studio can attribute activation and conversion to a specific node release,
  * which is what makes a regression in one version visible.
  */
-const NODE_VERSION = '0.3.2';
+const NODE_VERSION = '0.3.3';
 
 const SOURCE_TYPE_OPTIONS = [
 	{ name: 'Auto-Detect', value: '' },
@@ -88,7 +88,7 @@ export class McpStudio implements INodeType {
 	};
 
 	description: INodeTypeDescription = {
-		displayName: 'AI Context by Raglantern',
+		displayName: 'AI Context by MCP Studio',
 		// Never change: this is the type identifier stored in saved workflows.
 		name: 'mcpStudio',
 		icon: { light: 'file:appaTools.svg', dark: 'file:appaTools.dark.svg' },
@@ -122,7 +122,7 @@ export class McpStudio implements INodeType {
 		properties: [
 			{
 				displayName:
-					'This node needs a free Raglantern account. Create one at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then add an API key credential above and accept the <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>.',
+					'This node needs a free MCP Studio account. Create one at <a href="https://appatools.com/mcp-studio?utm_source=n8n&utm_medium=integration" target="_blank">appatools.com/mcp-studio</a>, then add an API key credential above and accept the <a href="https://appatools.com/mcp-studio/terms/n8n-node" target="_blank">Terms of Service</a>.',
 				name: 'setupNotice',
 				type: 'notice',
 				default: '',
@@ -270,7 +270,7 @@ export class McpStudio implements INodeType {
 								name: 'label',
 								type: 'string',
 								default: '',
-								description: 'Human-readable name shown in the Raglantern dashboard',
+								description: 'Human-readable name shown in the MCP Studio dashboard',
 							},
 						],
 					},
